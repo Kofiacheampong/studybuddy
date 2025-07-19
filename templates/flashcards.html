@@ -1,26 +1,60 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Flashcards</h2>
-<form method="POST" class="mb-3 row g-2">
-  <div class="col-md-5">
-    <input name="term" class="form-control" placeholder="Term" required />
-  </div>
-  <div class="col-md-5">
-    <input name="definition" class="form-control" placeholder="Definition" required />
-  </div>
-  <div class="col-md-2">
-    <button class="btn btn-success w-100" type="submit">Add Card</button>
-  </div>
-</form>
-<ul class="list-group">
-  {% for card in flashcards %}
-  <li class="list-group-item">
-    <strong>{{ card[1] }}</strong>: {{ card[2] }}
-  </li>
+<div class="form-section">
+  <div class="section-title">Create Flashcard</div>
+  <form method="POST" class="flashcard-form">
+    <div class="form-row">
+      <div class="form-group">
+        <input name="term" class="form-control" placeholder="Term" required />
+      </div>
+      <div class="form-group">
+        <input name="definition" class="form-control" placeholder="Definition" required />
+      </div>
+      <button class="btn btn-success" type="submit">Add Card</button>
+    </div>
+  </form>
+</div>
+
+<div class="flashcards-section">
+  <div class="section-title">Study Cards</div>
+  {% if flashcards %}
+    <div class="flashcards-grid">
+      {% for card in flashcards %}
+      <div class="flashcard" onclick="flipCard(this)">
+        <div class="flashcard-inner">
+          <div class="flashcard-front">
+            <div class="card-label">Term</div>
+            <div class="card-content">{{ card[1] }}</div>
+            <div class="flip-indicator">Click to reveal</div>
+          </div>
+          <div class="flashcard-back">
+            <div class="card-label">Definition</div>
+            <div class="card-content">{{ card[2] }}</div>
+            <div class="flip-indicator">Click to flip back</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
   {% else %}
-  <li class="list-group-item">No flashcards yet.</li>
-  {% endfor %}
-</ul>
+    <div class="no-flashcards">
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        <p>No flashcards yet. Create your first card above!</p>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+function flipCard(card) {
+  card.classList.toggle('flipped');
+}
+</script>
 {% endblock %}
 
 <!-- flashcards.html - Template for displaying and adding flashcards -->

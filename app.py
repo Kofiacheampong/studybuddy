@@ -6,6 +6,27 @@ from anthropic import Anthropic
 
 app = Flask(__name__)
 
+# Configure app for subdirectory deployment
+class SubdirectoryMiddleware:
+    def __init__(self, app, subdirectory='/study'):
+        self.app = app
+        self.subdirectory = subdirectory
+
+    def __call__(self, environ, start_response):
+        script_name = self.subdirectory
+        path_info = environ['PATH_INFO']
+        if path_info.startswith(script_name):
+            environ['PATH_INFO'] = path_info[len(script_name):]
+            environ['SCRIPT_NAME'] = script_name
+            return self.app(environ, start_response)
+        else:
+            environ['SCRIPT_NAME'] = script_name
+            return self.app(environ, start_response)
+
+# Only apply middleware in production
+if os.getenv('FLASK_ENV') != 'development':
+    app.wsgi_app = SubdirectoryMiddleware(app.wsgi_app)
+
 load_dotenv()
 api_key = os.getenv('ANTHROPIC_API_KEY')
 if api_key:
@@ -14,7 +35,11 @@ else:
     client = None
     print("Warning: ANTHROPIC_API_KEY not found in environment variables. AI features will be disabled.")
 
-DB = 'oci_study.db'
+# Database path - use production path when deployed
+if os.getenv('FLASK_ENV') == 'production':
+    DB = '/var/www/oci-study-buddy/data/oci_study.db'
+else:
+    DB = 'oci_study.db'
 
 def init_db():
     with sqlite3.connect(DB) as conn:
@@ -41,6 +66,15 @@ def notes():
     notes = c.fetchall()
     conn.close()
     return render_template('notes.html', notes=notes)
+
+@app.route('/delete_note/<int:note_id>', methods=['POST'])
+def delete_note(note_id):
+    conn = sqlite3.connect(DB)
+    c = conn.cursor()
+    c.execute('DELETE FROM notes WHERE id = ?', (note_id,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for('notes'))
 
 @app.route('/generate', methods=['POST'])
 def generate_summary():

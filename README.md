@@ -2,14 +2,17 @@
 
 A modern, minimalist Flask web application designed to help you study Oracle Cloud Infrastructure (OCI) concepts through intelligent note-taking and AI-powered content generation.
 
+🌐 **Live Demo**: Currently deployed at `http://192.168.1.172/study/`
+
 ## Features
 
-- **Quick Notes**: Simple, fast note-taking interface for capturing study thoughts
+- **Quick Notes**: Simple, fast note-taking interface with delete functionality
 - **AI-Powered Content Processing**: Transform raw OCI content into structured summaries using Claude AI
-- **Flashcard Generation**: Automatically generate study flashcards from your content
-- **Modern UI**: Clean, minimalist design inspired by modern web applications
+- **Interactive Flashcards**: Create and study with flip-card interface in a responsive grid layout
+- **Modern UI**: Clean, minimalist design inspired by Anthropic's interface
 - **Dark/Light Mode**: Seamless theme switching for comfortable studying
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
+- **Production Ready**: Deployed with Gunicorn, Nginx, and systemd for reliability
 
 ## Technology Stack
 
@@ -68,38 +71,76 @@ A modern, minimalist Flask web application designed to help you study Oracle Clo
 
 ```
 oci_study_app/
-├── app.py                 # Main Flask application
+├── app.py                 # Main Flask application with subdirectory support
 ├── requirements.txt       # Python dependencies
-├── .env                  # Environment variables (create this)
-├── oci_study.db          # SQLite database (auto-generated)
+├── .env                  # Environment variables (ANTHROPIC_API_KEY, FLASK_ENV)
+├── deploy.sh             # Production deployment script
+├── update-app.sh         # Quick update script for code changes
+├── DEPLOYMENT.md         # Detailed deployment guide
+├── production.py         # Production configuration
 ├── templates/            # HTML templates
 │   ├── base.html         # Base template with navigation
 │   ├── index.html        # Home page
-│   ├── notes.html        # Notes interface
-│   ├── flashcards.html   # Flashcards page
+│   ├── notes.html        # Notes interface with delete functionality
+│   ├── flashcards.html   # Interactive flashcards with grid layout
 │   └── quiz.html         # Quiz page
 └── static/
-    └── style.css         # Custom CSS styles
+    └── style.css         # Modern minimalist CSS with flashcard animations
 ```
 
 ## Database Schema
 
-The application uses a simple SQLite database with one table:
+The application uses SQLite with two main tables:
 
 ```sql
 CREATE TABLE notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL
 );
+
+CREATE TABLE flashcards (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    term TEXT NOT NULL,
+    definition TEXT NOT NULL
+);
 ```
+
+**Production Database Location**: `/var/www/oci-study-buddy/data/oci_study.db`
 
 ## API Endpoints
 
 - `GET /` - Home page
 - `GET /notes` - Notes page (display notes and forms)
 - `POST /notes` - Create a new note
+- `POST /delete_note/<id>` - Delete a specific note
 - `POST /generate` - Generate AI summary (returns JSON)
-- `POST /flashcards` - Generate AI flashcards (returns JSON)
+- `GET/POST /flashcards` - Flashcards page and creation
+- `GET/POST /quiz` - Quiz functionality
+
+## Production Deployment
+
+The app includes complete production deployment automation:
+
+### Quick Deploy
+```bash
+# Configure your server details in deploy.sh
+./deploy.sh
+```
+
+### Features
+- **Automated Setup**: Installs dependencies, creates systemd service, configures Nginx
+- **Subdirectory Support**: Runs at `/study` path alongside other apps
+- **Process Management**: Systemd service with auto-restart
+- **Production WSGI**: Gunicorn with 2 workers
+- **Reverse Proxy**: Nginx configuration with static file serving
+- **Quick Updates**: Use `./update-app.sh` for code changes
+
+### Requirements
+- Ubuntu server with SSH access
+- Passwordless sudo for deployment commands
+- Python 3.9+ and pip
+
+See `DEPLOYMENT.md` for detailed deployment instructions.
 
 ## Development
 

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./update-app.sh:*)"
+    ],
+    "deny": []
+  }
+}
