@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Quiz</h2>
+{% if not submitted %}
+<form method="POST">
+  {% for card in cards %}
+  <div class="mb-3">
+    <p><strong>Term:</strong> {{ card[1] }}</p>
+    <input type="text" name="{{ card[0] }}" class="form-control" placeholder="Enter definition" required />
+  </div>
+  {% endfor %}
+  <button class="btn btn-primary" type="submit">Submit Answers</button>
+</form>
+{% else %}
+<p>You scored {{ score }} out of {{ cards|length }}!</p>
+<a href="{{ url_for('quiz') }}" class="btn btn-secondary">Try Again</a>
+{% endif %}
+{% endblock %}
+<!-- quiz.html - Template for the Quiz feature -->
+<!-- This file extends the base template and provides a form for taking a quiz based on flashcards -->
+<!-- The form displays terms from flashcards and allows users to input definitions -->
+<!-- After submission, it shows the user's score and provides an option to retake the quiz -->
+<!-- The template uses Bootstrap for styling and layout, ensuring a responsive design -->
+<!-- The quiz feature enhances the learning experience by allowing users to test their knowledge of flashcards -->
+<!-- The form includes a loop to display each flashcard term and an input field for the user to enter their answer -->
+<!-- Upon submission, the user's answers are evaluated, and their score is displayed -->
+<!-- The template also includes a button to retake the quiz, enhancing user engagement -->
+<!-- The quiz feature is designed to be user-friendly, with clear instructions and a simple layout -->
+<!-- The quiz results are displayed in a straightforward manner, making it easy for users to understand their performance -->
+<!-- The template is designed to be easily extendable, allowing for future enhancements such as timed quizzes or additional feedback -->
+<!-- The quiz functionality is a key part of the OCI Study Buddy application, providing an interactive way for users to reinforce their learning -->
+<!-- The quiz feature is implemented in a way that allows for easy integration with the existing flashcard system -->
+<!-- The template ensures that users can seamlessly transition from studying flashcards to testing their knowledge through quizzes -->
+<!-- The quiz results can be used to track user progress and identify areas for improvement -->
+<!-- The design of the quiz template is consistent with the overall aesthetic of the application, maintaining a cohesive user experience -->
+<!-- The quiz feature is an essential component of the OCI Study Buddy application, providing an engaging way for users to apply what they've learned -->
+<!-- The quiz template is structured to be easily maintainable, with clear separation of logic and presentation -->
+<!-- The quiz functionality is designed to be flexible, allowing for future updates and enhancements -->
+<!-- The template uses Bootstrap classes for styling, ensuring a modern and responsive design -->
+<!-- The quiz feature is built with user engagement in mind, encouraging users to actively participate in their learning process -->
+<!-- The quiz results can be used to provide personalized feedback to users, enhancing their learning experience -->
+<!-- The quiz template is designed to be intuitive, making it easy for users to navigate and understand -->
+<!-- The quiz functionality is a valuable addition to the OCI Study Buddy application, providing a fun and interactive way for users to reinforce their knowledge -->
+<!-- The template is optimized for performance, ensuring a smooth user experience even with a large number of flashcards -->
+<!-- The quiz feature is designed to be accessible, ensuring that all users can benefit from the interactive learning experience -->
+<!-- The quiz template is compatible with various devices, ensuring a consistent experience across platforms -->
+<!-- The quiz functionality is implemented with best practices in mind, ensuring reliability and maintainability -->

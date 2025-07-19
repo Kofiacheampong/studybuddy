@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Flashcards</h2>
+<form method="POST" class="mb-3 row g-2">
+  <div class="col-md-5">
+    <input name="term" class="form-control" placeholder="Term" required />
+  </div>
+  <div class="col-md-5">
+    <input name="definition" class="form-control" placeholder="Definition" required />
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-success w-100" type="submit">Add Card</button>
+  </div>
+</form>
+<ul class="list-group">
+  {% for card in flashcards %}
+  <li class="list-group-item">
+    <strong>{{ card[1] }}</strong>: {{ card[2] }}
+  </li>
+  {% else %}
+  <li class="list-group-item">No flashcards yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
+
+<!-- flashcards.html - Template for displaying and adding flashcards -->
+<!-- This file extends the base template and provides a form for adding flashcards and displaying existing ones -->
+<!-- The form includes fields for term and definition, and displays a list of flashcards if available -->
+<!-- The flashcards are displayed in a list format, with each card showing the term and definition -->
+<!-- The template uses Bootstrap for styling and layout, ensuring a responsive design -->

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="form-section">
+  <div class="section-title">Quick Notes</div>
+  <form method="POST" class="mb-3">
+    <textarea name="content" class="form-control" rows="4" placeholder="Enter your note..."></textarea>
+    <button class="btn btn-primary mt-3">Save Note</button>
+  </form>
+</div>
+
+<div class="form-section">
+  <div class="section-title">AI-Powered Content Processing</div>
+  <form id="aiForm" class="mb-3">
+    <textarea name="raw_text" id="raw_text" class="form-control" rows="6" placeholder="Paste OCI transcript or raw content..."></textarea>
+    <div class="mt-3 d-flex gap-2">
+      <button class="btn btn-success" type="submit">Generate Summary</button>
+      <button class="btn btn-info" type="button" id="generateFlashcards">Generate Flashcards</button>
+    </div>
+  </form>
+  <div id="ai-result" class="alert alert-info d-none"></div>
+</div>
+
+<script>
+document.getElementById("aiForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+  const text = document.getElementById("raw_text").value;
+  if (!text.trim()) {
+    alert("Please enter some content first");
+    return;
+  }
+  
+  const result = document.getElementById("ai-result");
+  result.innerHTML = "Processing content...";
+  result.className = "alert alert-info";
+  result.classList.remove("d-none");
+  
+  try {
+    const res = await fetch("/generate", {
+      method: "POST",
+      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      body: "raw_text=" + encodeURIComponent(text)
+    });
+    const data = await res.json();
+    
+    if (data.error) {
+      result.innerHTML = data.error;
+      result.className = "alert alert-danger";
+    } else {
+      result.innerHTML = "<strong>Generated Summary</strong>" + data.summary;
+      result.className = "alert alert-success";
+    }
+  } catch (error) {
+    result.innerHTML = "Error generating summary. Please try again.";
+    result.className = "alert alert-danger";
+  }
+});
+
+document.getElementById("generateFlashcards").addEventListener("click", async function(e) {
+  const text = document.getElementById("raw_text").value;
+  if (!text.trim()) {
+    alert("Please enter some content first");
+    return;
+  }
+  
+  const res = await fetch("/flashcards", {
+    method: "POST",
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: "raw_text=" + encodeURIComponent(text)
+  });
+  const data = await res.json();
+  const result = document.getElementById("ai-result");
+  result.innerHTML = "<strong>Generated Flashcards</strong>" + data.flashcards.replace(/\n/g, "<br>");
+  result.className = "alert alert-success";
+  result.classList.remove("d-none");
+  
+  // Redirect to flashcards page after a short delay
+  setTimeout(() => {
+    window.location.href = "/flashcards";
+  }, 2000);
+});
+</script>
+
+
+<div class="notes-section">
+  <div class="section-title">Saved Notes</div>
+  {% if notes %}
+    {% for note in notes %}
+    <div class="note-item">{{ note[1] }}</div>
+    {% endfor %}
+  {% else %}
+    <div class="no-notes">No notes yet. Add your first note above!</div>
+  {% endif %}
+</div>
+{% endblock %}
+<!-- notes.html - Template for displaying and adding notes -->
+<!-- This file extends the base template and provides a form for adding notes and displaying existing ones -->
+<!-- The form includes a textarea for note content and a button to save the note -->
