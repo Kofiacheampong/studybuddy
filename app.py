@@ -11,90 +11,6 @@ try:
     from topics_manager import bp as topics_bp
     app.register_blueprint(topics_bp)
 except Exception:
-    pass
-
-# --- TOPIC-SCOPED ROUTES ---
-@app.route('/topics/<int:topic_id>/notes', methods=['GET', 'POST'])
-def topic_notes(topic_id):
-    conn = sqlite3.connect(DB)
-    c = conn.cursor()
-    c.execute('SELECT id, name FROM topics WHERE id = ?', (topic_id,))
-    topic_tuple = c.fetchone()
-    if not topic_tuple:
-        conn.close()
-        return 'Topic not found', 404
-    if request.method == 'POST':
-        content = request.form['content'].strip()
-        if content:
-            c.execute('INSERT INTO notes (topic_id, content) VALUES (?, ?)', (topic_id, content))
-            conn.commit()
-        return redirect(url_for('topic_notes', topic_id=topic_id))
-    c.execute('SELECT * FROM notes WHERE topic_id = ? ORDER BY id DESC', (topic_id,))
-    notes_list = c.fetchall()
-    conn.close()
-    return render_template('notes.html', notes=notes_list, topic=topic_tuple)
-
-@app.route('/topics/<int:topic_id>/flashcards', methods=['GET', 'POST'])
-def topic_flashcards(topic_id):
-    conn = sqlite3.connect(DB)
-    c = conn.cursor()
-    c.execute('SELECT id, name FROM topics WHERE id = ?', (topic_id,))
-    topic_tuple = c.fetchone()
-    if not topic_tuple:
-        conn.close()
-        return 'Topic not found', 404
-    if request.method == 'POST':
-        term = request.form.get('term', '').strip()
-        definition = request.form.get('definition', '').strip()
-        if term and definition:
-            c.execute('INSERT INTO flashcards (topic_id, term, definition) VALUES (?, ?, ?)', (topic_id, term, definition))
-            conn.commit()
-        return redirect(url_for('topic_flashcards', topic_id=topic_id))
-    c.execute('SELECT * FROM flashcards WHERE topic_id = ? ORDER BY id DESC', (topic_id,))
-    fc_list = c.fetchall()
-    conn.close()
-    return render_template('flashcards.html', flashcards=fc_list, topic=topic_tuple)
-
-@app.route('/topics/<int:topic_id>/quiz', methods=['GET', 'POST'])
-def topic_quiz(topic_id):
-    conn = sqlite3.connect(DB)
-    c = conn.cursor()
-    c.execute('SELECT id, name FROM topics WHERE id = ?', (topic_id,))
-    topic_tuple = c.fetchone()
-    if not topic_tuple:
-        conn.close()
-        return 'Topic not found', 404
-    c.execute('SELECT id, topic_id, term, definition FROM flashcards WHERE topic_id = ? ORDER BY RANDOM() LIMIT 10', (topic_id,))
-    cards = c.fetchall()
-    score = None
-    if request.method == 'POST':
-        correct = 0
-        for card in cards:
-            card_id = str(card[0])
-            user_answer = request.form.get(card_id, '').strip().lower()
-            correct_answer = card[3].strip().lower()
-            if user_answer == correct_answer:
-                correct += 1
-        score = f'{correct} / {len(cards)}'
-        conn.close()
-        return render_template('quiz.html', submitted=True, score=score, cards=cards, topic=topic_tuple)
-    conn.close()
-    if not cards:
-        return redirect(url_for('topic_flashcards', topic_id=topic_id))
-    return render_template('quiz.html', submitted=False, cards=cards, topic=topic_tuple)
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-import sqlite3
-import os
-from dotenv import load_dotenv
-from anthropic import Anthropic
-
-app = Flask(__name__)
-
-# Register topics blueprint
-try:
-    from topics_manager import bp as topics_bp
-    app.register_blueprint(topics_bp)
-except Exception:
     # If import fails (during early init), continue; blueprint can be registered later
     pass
 
@@ -479,6 +395,3 @@ def quiz_for_topic(topic_id):
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
-# app.py - Main application file for the Study Buddy Flask app
-# This file initializes the Flask app, sets up routes for notes and flashcards,
-# and handles database interactions using SQLite.
