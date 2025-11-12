@@ -18,14 +18,14 @@
       <div class="card p-3 mb-3">
         <h5>Notes</h5>
         <p>{{ notes }} notes</p>
-        <a href="{{ url_for('notes') }}" class="btn btn-sm btn-primary">View Notes</a>
+        <a href="{{ url_for('notes_for_topic', topic_id=topic.id) }}" class="btn btn-sm btn-primary">View Notes</a>
       </div>
     </div>
     <div class="col-md-6">
       <div class="card p-3 mb-3">
         <h5>Flashcards</h5>
         <p>{{ flashcards }} cards</p>
-        <a href="{{ url_for('flashcards') }}" class="btn btn-sm btn-primary">View Flashcards</a>
+        <a href="{{ url_for('flashcards_for_topic', topic_id=topic.id) }}" class="btn btn-sm btn-primary">View Flashcards</a>
       </div>
     </div>
   </div>
