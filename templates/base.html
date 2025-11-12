@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>OCI Study Buddy</title>
+  <title>Study Buddy</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body class="light-mode">
 <nav class="navbar navbar-dark bg-primary mb-4">
-  <div class="container">
-    <a class="navbar-brand" href="{{ url_for('index') }}">OCI Study Buddy</a>
-    <div>
-      <a class="btn btn-light me-2" href="{{ url_for('notes') }}">Notes</a>
-      <a class="btn btn-light me-2" href="{{ url_for('flashcards') }}">Flashcards</a>
-      <a class="btn btn-light" href="{{ url_for('quiz') }}">Quiz</a>
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="navbar-brand" href="{{ url_for('index') }}">📚 Study Buddy</a>
+    <div class="d-flex gap-2 flex-wrap">
+      <a class="btn btn-light btn-sm" href="{{ url_for('topics.list_topics') }}">Topics</a>
+      <a class="btn btn-light btn-sm" href="{{ url_for('flashcards') }}">Flashcards</a>
+      <a class="btn btn-light btn-sm" href="{{ url_for('quiz') }}">Quiz</a>
     </div>
   </div>
 </nav>

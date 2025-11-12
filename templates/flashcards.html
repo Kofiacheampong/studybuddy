@@ -17,6 +17,9 @@
 
 <div class="flashcards-section">
   <div class="section-title">Study Cards</div>
+  {% if topic %}
+    <div class="mb-2"><small class="text-muted">Topic: <strong>{{ topic[1] if topic is iterable else topic.name }}</strong></small></div>
+  {% endif %}
   {% if flashcards %}
     <div class="flashcards-grid">
       {% for card in flashcards %}

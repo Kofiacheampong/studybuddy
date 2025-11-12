@@ -2,6 +2,9 @@
 {% block content %}
 <div class="form-section">
   <div class="section-title">Quick Notes</div>
+  {% if topic %}
+    <div class="mb-2"><small class="text-muted">Topic: <strong>{{ topic[1] if topic is iterable else topic.name }}</strong></small></div>
+  {% endif %}
   <form method="POST" class="mb-3">
     <textarea name="content" class="form-control" rows="4" placeholder="Enter your note..."></textarea>
     <button class="btn btn-primary mt-3">Save Note</button>
@@ -11,7 +14,7 @@
 <div class="form-section">
   <div class="section-title">AI-Powered Content Processing</div>
   <form id="aiForm" class="mb-3">
-    <textarea name="raw_text" id="raw_text" class="form-control" rows="6" placeholder="Paste OCI transcript or raw content..."></textarea>
+    <textarea name="raw_text" id="raw_text" class="form-control" rows="6" placeholder="Paste your study material, transcript, or raw content..."></textarea>
     <div class="mt-3 d-flex gap-2">
       <button class="btn btn-success" type="submit">Generate Summary</button>
       <button class="btn btn-info" type="button" id="generateFlashcards">Generate Flashcards</button>

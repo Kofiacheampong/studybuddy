@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="hero-section text-center py-5 mb-5">
-  <h1 class="display-4 mb-4">🎯 OCI Study Buddy</h1>
-  <p class="lead mb-4">Your Claude AI-powered companion for mastering Oracle Cloud Infrastructure</p>
+  <h1 class="display-4 mb-4"> Study Buddy</h1>
+  <p class="lead mb-4">Your AI-powered companion for mastering any subject</p>
   <div class="d-flex justify-content-center gap-3 flex-wrap">
-    <a href="{{ url_for('notes') }}" class="btn btn-primary btn-lg">📝 Start Taking Notes</a>
-    <a href="{{ url_for('flashcards') }}" class="btn btn-success btn-lg">🎴 Create Flashcards</a>
+    <a href="{{ url_for('topics.create_topic') }}" class="btn btn-primary btn-lg">📝 Get Started</a>
+    <a href="{{ url_for('topics.list_topics') }}" class="btn btn-success btn-lg">📚 View Topics</a>
     <a href="{{ url_for('quiz') }}" class="btn btn-warning btn-lg">🧠 Take a Quiz</a>
   </div>
 </div>
@@ -16,7 +16,7 @@
       <div class="card-body text-center">
         <div class="feature-icon mb-3">📝</div>
         <h5 class="card-title">Smart Notes</h5>
-        <p class="card-text">Create manual notes or use AI to summarize OCI training content into organized, easy-to-review notes.</p>
+        <p class="card-text">Create manual notes or use AI to summarize your study material into organized, easy-to-review notes.</p>
         <a href="{{ url_for('notes') }}" class="btn btn-outline-primary">Get Started</a>
       </div>
     </div>
@@ -27,7 +27,7 @@
       <div class="card-body text-center">
         <div class="feature-icon mb-3">🎴</div>
         <h5 class="card-title">Flashcards</h5>
-        <p class="card-text">Build your OCI knowledge with interactive flashcards. Create them manually or generate them automatically from your study material.</p>
+        <p class="card-text">Build your knowledge with interactive flashcards. Create them manually or generate them automatically from your study material.</p>
         <a href="{{ url_for('flashcards') }}" class="btn btn-outline-success">Create Cards</a>
       </div>
     </div>
@@ -50,11 +50,11 @@
   <div class="row">
     <div class="col-md-6">
       <h5>✨ Intelligent Summaries</h5>
-      <p>Paste OCI training transcripts and get clear, organized summaries automatically.</p>
+      <p>Paste training transcripts or study material and get clear, organized summaries automatically.</p>
     </div>
     <div class="col-md-6">
       <h5>🎯 Targeted Flashcards</h5>
-      <p>Generate focused flashcards from any OCI content to reinforce key concepts.</p>
+      <p>Generate focused flashcards from any content to reinforce key concepts.</p>
     </div>
   </div>
 </div>
