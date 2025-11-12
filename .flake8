@@ -1,0 +1,54 @@
+[flake8]
+max-line-length = 127
+exclude = 
+    .git,
+    __pycache__,
+    docs/source/conf.py,
+    old/long_deleted_file.py,
+    .venv,
+    venv,
+    .eggs,
+    *.egg,
+    build,
+    dist
+
+ignore = 
+    # E203: whitespace before ':'
+    E203,
+    # W503: line break before binary operator
+    W503,
+    # E501: line too long (handled by black)
+    E501
+
+per-file-ignores =
+    __init__.py:F401
+
+[isort]
+profile = black
+multi_line_mode = 3
+include_trailing_comma = True
+force_grid_wrap = 0
+use_parentheses = True
+line_length = 127
+skip_gitignore = True
+known_first_party = app,topics_manager
+known_third_party = flask,anthropic,dotenv
+
+[black]
+line-length = 127
+target-version = ['py310', 'py311', 'py312']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | venv
+)/
+'''

@@ -1,0 +1,33 @@
+# Bandit security testing configuration
+# For more info: https://bandit.readthedocs.io/
+
+# Severity level: LOW, MEDIUM, HIGH
+exclude_dirs: ['/tests/', '/venv/', '.git', '__pycache__']
+
+# Tests to skip
+skips: ['B101']  # Skip assert_used tests
+
+tests:
+  - B201  # flask_debug_true
+  - B301  # pickle
+  - B302  # marshal
+  - B303  # md5
+  - B304  # cipher
+  - B305  # cipher_iv
+  - B306  # mktemp_q
+  - B307  # eval
+  - B308  # mark_safe
+  - B309  # httpsconnection
+  - B310  # url_open
+  - B311  # random
+  - B312  # telnetlib
+  - B313  # xml_bad_cElementTree
+  - B314  # xml_bad_ElementTree
+  - B315  # xml_bad_expat_reader
+  - B316  # xml_bad_expat_builder
+  - B317  # xml_bad_sax
+  - B318  # xml_bad_pulldom
+  - B319  # xml_bad_etree
+  - B320  # xml_bad_etree
+  - B321  # pickle
+  - B322  # pickle
