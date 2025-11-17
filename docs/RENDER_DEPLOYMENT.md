@@ -1,5 +1,7 @@
 # Deploy Study Buddy to Render.com
 
+> **✨ Automatic Configuration**: This project includes `render.yaml` which automatically configures your Render deployment! You can use the UI steps below or just connect your repo and Render will auto-detect the configuration.
+
 ## 🚀 Quick Start (5 Minutes)
 
 ### Step 1: Sign Up with GitHub
@@ -24,7 +26,7 @@ Fill in these settings:
 | **Branch** | main |
 | **Runtime** | Python 3 |
 | **Build Command** | `pip install -r requirements.txt` |
-| **Start Command** | `gunicorn app:app` |
+| **Start Command** | `gunicorn wsgi:app` |
 
 ### Step 4: Environment Variables
 Add these environment variables:
