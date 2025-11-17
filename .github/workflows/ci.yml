@@ -82,25 +82,4 @@ jobs:
     - name: Run Bandit security checks
       run: bandit -r . -ll --exclude=venv,tests || true
 
-  deploy:
-    needs: [test, lint, security]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && success()
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Deploy to production server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        port: ${{ secrets.SERVER_PORT }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /var/www/study-buddy
-          git pull origin main
-          source venv/bin/activate
-          pip install -r requirements.txt
-          sudo systemctl restart study-buddy
-          echo "Deployment completed successfully!"
+
