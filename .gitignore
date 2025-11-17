@@ -44,11 +44,15 @@ htmlcov/
 .hypothesis/
 
 # Database
+data/*.db
 *.db
 study_buddy.db
 oci_study.db
 
 # Environment variables
+config/.env
+config/.env.local
+config/.env.*.local
 .env
 .env.local
 .env.*.local
