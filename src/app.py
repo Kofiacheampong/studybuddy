@@ -4,7 +4,12 @@ import os
 from dotenv import load_dotenv
 from anthropic import Anthropic
 
-app = Flask(__name__)
+# Get the project root directory
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+template_dir = os.path.join(project_root, 'templates')
+static_dir = os.path.join(project_root, 'static')
+
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 
 # Register topics blueprint
 try:

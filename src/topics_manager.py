@@ -4,11 +4,13 @@ import os
 
 bp = Blueprint('topics', __name__, url_prefix='/topics')
 
-# Determine DB path (match app.py logic)
+# Determine DB path - must match app.py logic
 if os.getenv('FLASK_ENV') == 'production':
     DB = '/var/www/study-buddy/data/study_buddy.db'
 else:
-    DB = 'study_buddy.db'
+    # Development: use data folder in project root
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    DB = os.path.join(base_dir, 'data', 'study_buddy.db')
 
 @bp.route('/')
 def list_topics():

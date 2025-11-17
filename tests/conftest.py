@@ -4,8 +4,8 @@ import os
 import sys
 import tempfile
 
-# Add parent directory to path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Add src directory to path so we can import app
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
 
 @pytest.fixture

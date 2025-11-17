@@ -10,7 +10,9 @@ exclude =
     .eggs,
     *.egg,
     build,
-    dist
+    dist,
+    tests,
+    docs
 
 ignore = 
     # E203: whitespace before ':'
@@ -31,6 +33,7 @@ force_grid_wrap = 0
 use_parentheses = True
 line_length = 127
 skip_gitignore = True
+src_paths = src
 known_first_party = app,topics_manager
 known_third_party = flask,anthropic,dotenv
 
