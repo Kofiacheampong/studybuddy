@@ -8,11 +8,19 @@ import tempfile
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
 
+@pytest.fixture(scope="session", autouse=True)
+def setup_database():
+    """Session-level fixture to ensure data directory exists"""
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    data_dir = os.path.join(base_dir, 'data')
+    os.makedirs(data_dir, exist_ok=True)
+
+
 @pytest.fixture
 def app():
     """Create a test Flask app"""
     # Create temp database for testing
-    db_fd, db_path = tempfile.mkstemp()
+    db_fd, db_path = tempfile.mkstemp(suffix='.db')
     
     # Import app and configure for testing
     from app import app as flask_app
@@ -23,6 +31,14 @@ def app():
     original_db = app_module.DB
     app_module.DB = db_path
     
+    # Also patch topics_manager
+    try:
+        import topics_manager
+        original_topics_db = topics_manager.DB
+        topics_manager.DB = db_path
+    except ImportError:
+        original_topics_db = None
+    
     # Initialize test database
     init_test_db(db_path)
     
@@ -30,6 +46,8 @@ def app():
     
     # Cleanup
     app_module.DB = original_db
+    if original_topics_db is not None:
+        topics_manager.DB = original_topics_db
     os.close(db_fd)
     os.unlink(db_path)
 

@@ -56,6 +56,10 @@ else:
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     DB = os.path.join(base_dir, 'data', 'study_buddy.db')
 
+# Ensure data directory exists
+db_dir = os.path.dirname(DB)
+os.makedirs(db_dir, exist_ok=True)
+
 def init_db():
     with sqlite3.connect(DB) as conn:
         c = conn.cursor()
