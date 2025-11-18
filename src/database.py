@@ -119,3 +119,8 @@ def init_database():
 def get_placeholder():
     """Return the correct placeholder for SQL queries (%s for Postgres, ? for SQLite)"""
     return '%s' if USE_POSTGRES else '?'
+
+# For backwards compatibility - expose a get_db function
+def get_db():
+    """Alias for get_db_connection for compatibility"""
+    return get_db_connection()

@@ -3,6 +3,17 @@ import os
 from dotenv import load_dotenv
 from anthropic import Anthropic
 from database import get_db_connection, init_database, get_placeholder, USE_POSTGRES
+import sqlite3  # Still needed for backwards compatibility
+
+# Helper function for database connections
+def get_db():
+    """Get database connection - uses RDS if DATABASE_URL is set, otherwise SQLite"""
+    return get_db_connection()
+
+# For backwards compatibility with existing code
+class DB:
+    """Dummy DB class for backwards compatibility"""
+    pass
 
 # Get the project root directory
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -57,7 +68,7 @@ def index():
 
 @app.route('/notes', methods=['GET', 'POST'])
 def notes():
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
     
     # Get default topic
@@ -87,9 +98,9 @@ def notes():
     conn.close()
     return render_template('notes.html', notes=notes_list, topic=topic_tuple)
 
-@app.route('/delete_note/<int:note_id>', methods=['POST'])
+@app.route('/delete-note/<int:note_id>', methods=['POST'])
 def delete_note(note_id):
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
     # Get default topic id
     c.execute('SELECT id FROM topics WHERE name = ?', ('General',))
@@ -108,7 +119,7 @@ def generate_summary():
     
     try:
         # Get default topic
-        conn = sqlite3.connect(DB)
+        conn = get_db()
         c = conn.cursor()
         c.execute('SELECT id FROM topics WHERE name = ?', ('General',))
         topic = c.fetchone()
@@ -124,7 +135,7 @@ def generate_summary():
         )
         summary = response.content[0].text.strip()
 
-        conn = sqlite3.connect(DB)
+        conn = get_db()
         c = conn.cursor()
         c.execute('INSERT INTO notes (topic_id, content) VALUES (?, ?)', (topic_id, summary))
         conn.commit()
@@ -136,7 +147,7 @@ def generate_summary():
 
 @app.route('/flashcards', methods=['GET', 'POST'])
 def flashcards():
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
     
     # Get default topic
@@ -203,7 +214,7 @@ def flashcards():
 
 @app.route('/quiz', methods=['GET', 'POST'])
 def quiz():
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
     
     # Get default topic
@@ -243,9 +254,9 @@ def quiz():
 
 
 # Topic-scoped routes (Phase 2)
-@app.route('/topics/<int:topic_id>/notes', methods=['GET', 'POST'])
+@app.route('/<int:topic_id>/notes', methods=['GET', 'POST'])
 def notes_for_topic(topic_id):
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
     # verify topic
     c.execute('SELECT id, name FROM topics WHERE id = ?', (topic_id,))
@@ -267,9 +278,9 @@ def notes_for_topic(topic_id):
     return render_template('notes.html', notes=notes_list, topic=t)
 
 
-@app.route('/topics/<int:topic_id>/delete_note/<int:note_id>', methods=['POST'])
+@app.route('/<int:topic_id>/delete-note/<int:note_id>', methods=['POST'])
 def delete_note_for_topic(topic_id, note_id):
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
     c.execute('DELETE FROM notes WHERE id = ? AND topic_id = ?', (note_id, topic_id))
     conn.commit()
@@ -277,9 +288,9 @@ def delete_note_for_topic(topic_id, note_id):
     return redirect(url_for('notes_for_topic', topic_id=topic_id))
 
 
-@app.route('/topics/<int:topic_id>/flashcards', methods=['GET', 'POST'])
+@app.route('/<int:topic_id>/flashcards', methods=['GET', 'POST'])
 def flashcards_for_topic(topic_id):
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
     c.execute('SELECT id, name FROM topics WHERE id = ?', (topic_id,))
     t = c.fetchone()
@@ -331,9 +342,9 @@ def flashcards_for_topic(topic_id):
     return render_template('flashcards.html', flashcards=fc_list, topic=t)
 
 
-@app.route('/topics/<int:topic_id>/quiz', methods=['GET', 'POST'])
+@app.route('/<int:topic_id>/quiz', methods=['GET', 'POST'])
 def quiz_for_topic(topic_id):
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     c = conn.cursor()
     c.execute('SELECT id, name FROM topics WHERE id = ?', (topic_id,))
     t = c.fetchone()
