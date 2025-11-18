@@ -374,5 +374,5 @@ def quiz_for_topic(topic_id):
     return render_template('quiz.html', submitted=False, cards=cards, topic=t)
 
 if __name__ == '__main__':
-    init_db()
+    init_database()
     app.run(debug=True)

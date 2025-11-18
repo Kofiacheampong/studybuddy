@@ -1,7 +1,8 @@
 # Production configuration for OCI Study Buddy
 
 import os
-from app import app, init_db
+from app import app
+from src.database import init_database
 
 # Production settings
 app.config['DEBUG'] = False
@@ -17,7 +18,7 @@ app_module.DB = DB_PATH
 
 if __name__ == '__main__':
     # Initialize database on first run
-    init_db()
+    init_database()
     
     # Run with gunicorn in production, this is just for testing
     app.run(host='127.0.0.1', port=5001, debug=False)
