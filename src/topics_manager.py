@@ -6,7 +6,9 @@ bp = Blueprint('topics', __name__, url_prefix='/topics')
 
 # Determine DB path - must match app.py logic
 if os.getenv('FLASK_ENV') == 'production':
-    DB = '/var/www/study-buddy/data/study_buddy.db'
+    # On Render, use the ephemeral /tmp directory or a persistent volume if configured
+    # For now, use a tmp path (data resets on redeploy - see docs for Postgres option)
+    DB = '/tmp/study_buddy.db'
 else:
     # Development: use data folder in project root
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
