@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
-import sqlite3
 import os
 from dotenv import load_dotenv
 from anthropic import Anthropic
+from database import get_db_connection, init_database, get_placeholder, USE_POSTGRES
 
 # Get the project root directory
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -48,60 +48,8 @@ else:
     client = None
     print("Warning: ANTHROPIC_API_KEY not found in environment variables. AI features will be disabled.")
 
-# Database path - use appropriate path based on environment
-if os.getenv('FLASK_ENV') == 'production':
-    # On Render, use the ephemeral /tmp directory or a persistent volume if configured
-    # For now, use a tmp path (data resets on redeploy - see docs for Postgres option)
-    DB = '/tmp/study_buddy.db'
-else:
-    # Development: use data folder in project root
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    DB = os.path.join(base_dir, 'data', 'study_buddy.db')
-
-# Ensure data directory exists
-db_dir = os.path.dirname(DB)
-os.makedirs(db_dir, exist_ok=True)
-
-def init_db():
-    try:
-        print(f"Initializing database at: {DB}")
-        with sqlite3.connect(DB) as conn:
-            c = conn.cursor()
-            c.execute("""CREATE TABLE IF NOT EXISTS topics (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL UNIQUE,
-                description TEXT
-            )""")
-            c.execute("""CREATE TABLE IF NOT EXISTS notes (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                topic_id INTEGER NOT NULL,
-                content TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(topic_id) REFERENCES topics(id) ON DELETE CASCADE
-            )""")
-            c.execute("""CREATE TABLE IF NOT EXISTS flashcards (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                topic_id INTEGER NOT NULL,
-                term TEXT NOT NULL,
-                definition TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(topic_id) REFERENCES topics(id) ON DELETE CASCADE
-            )""")
-            conn.commit()
-            
-            # Create default topic if none exist
-            c.execute('SELECT COUNT(*) FROM topics')
-            if c.fetchone()[0] == 0:
-                c.execute('INSERT INTO topics (name, description) VALUES (?, ?)', 
-                          ('General', 'Default study topic'))
-                conn.commit()
-        print("Database initialized successfully!")
-    except Exception as e:
-        print(f"Error initializing database: {e}")
-        raise
-
-# Initialize database when app starts (after DB is defined)
-init_db()
+# Initialize database when app starts
+init_database()
 
 @app.route('/')
 def index():

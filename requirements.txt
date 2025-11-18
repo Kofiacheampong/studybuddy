@@ -4,6 +4,9 @@ requests==2.31.0
 python-dotenv==1.0.0
 anthropic>=0.3.0
 
+# Database drivers
+psycopg2-binary==2.9.9  # PostgreSQL driver for AWS RDS
+
 # Production dependencies
 gunicorn==21.2.0
 python-json-logger==2.0.7
