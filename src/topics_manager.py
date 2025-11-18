@@ -1,5 +1,16 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from database import get_db_connection
+from database import get_db_connection, USE_POSTGRES
+import sqlite3
+
+# Import appropriate exception based on database type
+if USE_POSTGRES:
+    try:
+        import psycopg2
+        IntegrityError = psycopg2.IntegrityError
+    except ImportError:
+        IntegrityError = Exception
+else:
+    IntegrityError = sqlite3.IntegrityError
 
 bp = Blueprint('topics', __name__, url_prefix='/topics')
 
@@ -39,7 +50,7 @@ def create_topic():
             topic_id = c.lastrowid
             conn.close()
             return redirect(url_for('topics.view_topic', topic_id=topic_id))
-        except sqlite3.IntegrityError:
+        except IntegrityError:
             conn.close()
             return render_template('create_topic.html', error='Topic already exists')
     return render_template('create_topic.html')
@@ -81,7 +92,7 @@ def edit_topic(topic_id):
             conn.commit()
             conn.close()
             return redirect(url_for('topics.view_topic', topic_id=topic_id))
-        except sqlite3.IntegrityError:
+        except IntegrityError:
             conn.close()
             return render_template('edit_topic.html', topic={'id': t[0], 'name': t[1], 'description': t[2]}, error='Topic name exists')
     conn.close()
