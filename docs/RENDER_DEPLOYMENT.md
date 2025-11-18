@@ -26,7 +26,7 @@ Fill in these settings:
 | **Branch** | main |
 | **Runtime** | Python 3 |
 | **Build Command** | `pip install -r requirements.txt` |
-| **Start Command** | `gunicorn wsgi:app` |
+| **Start Command** | `gunicorn app:app` |
 
 ### Step 4: Environment Variables
 Add these environment variables:
