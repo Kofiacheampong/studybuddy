@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 # Import the Flask app from src/app.py (use src module notation)
 import src.app as src_app
 app = src_app.app
+DB = src_app.DB  # Expose DB for pytest fixtures to patch
 
 if __name__ == "__main__":
     app.run()

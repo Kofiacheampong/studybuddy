@@ -26,17 +26,25 @@ def app():
     from app import app as flask_app
     flask_app.config['TESTING'] = True
     
-    # Monkey-patch the DB path for this app instance
-    import app as app_module
-    original_db = app_module.DB
-    app_module.DB = db_path
+    # Monkey-patch DB in both root app.py and src/app.py
+    import app as root_app_module
+    original_db = root_app_module.DB
+    root_app_module.DB = db_path
+    
+    # Also patch src/app.py directly
+    try:
+        import src.app as src_app_module
+        src_original_db = src_app_module.DB
+        src_app_module.DB = db_path
+    except (ImportError, AttributeError):
+        src_original_db = None
     
     # Also patch topics_manager
     try:
         import topics_manager
         original_topics_db = topics_manager.DB
         topics_manager.DB = db_path
-    except ImportError:
+    except (ImportError, AttributeError):
         original_topics_db = None
     
     # Initialize test database
@@ -45,7 +53,9 @@ def app():
     yield flask_app
     
     # Cleanup
-    app_module.DB = original_db
+    root_app_module.DB = original_db
+    if src_original_db is not None:
+        src_app_module.DB = src_original_db
     if original_topics_db is not None:
         topics_manager.DB = original_topics_db
     os.close(db_fd)
