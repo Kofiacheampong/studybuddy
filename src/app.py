@@ -63,36 +63,42 @@ db_dir = os.path.dirname(DB)
 os.makedirs(db_dir, exist_ok=True)
 
 def init_db():
-    with sqlite3.connect(DB) as conn:
-        c = conn.cursor()
-        c.execute("""CREATE TABLE IF NOT EXISTS topics (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL UNIQUE,
-            description TEXT
-        )""")
-        c.execute("""CREATE TABLE IF NOT EXISTS notes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            topic_id INTEGER NOT NULL,
-            content TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(topic_id) REFERENCES topics(id) ON DELETE CASCADE
-        )""")
-        c.execute("""CREATE TABLE IF NOT EXISTS flashcards (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            topic_id INTEGER NOT NULL,
-            term TEXT NOT NULL,
-            definition TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(topic_id) REFERENCES topics(id) ON DELETE CASCADE
-        )""")
-        conn.commit()
-        
-        # Create default topic if none exist
-        c.execute('SELECT COUNT(*) FROM topics')
-        if c.fetchone()[0] == 0:
-            c.execute('INSERT INTO topics (name, description) VALUES (?, ?)', 
-                      ('General', 'Default study topic'))
+    try:
+        print(f"Initializing database at: {DB}")
+        with sqlite3.connect(DB) as conn:
+            c = conn.cursor()
+            c.execute("""CREATE TABLE IF NOT EXISTS topics (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                description TEXT
+            )""")
+            c.execute("""CREATE TABLE IF NOT EXISTS notes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                topic_id INTEGER NOT NULL,
+                content TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(topic_id) REFERENCES topics(id) ON DELETE CASCADE
+            )""")
+            c.execute("""CREATE TABLE IF NOT EXISTS flashcards (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                topic_id INTEGER NOT NULL,
+                term TEXT NOT NULL,
+                definition TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(topic_id) REFERENCES topics(id) ON DELETE CASCADE
+            )""")
             conn.commit()
+            
+            # Create default topic if none exist
+            c.execute('SELECT COUNT(*) FROM topics')
+            if c.fetchone()[0] == 0:
+                c.execute('INSERT INTO topics (name, description) VALUES (?, ?)', 
+                          ('General', 'Default study topic'))
+                conn.commit()
+        print("Database initialized successfully!")
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+        raise
 
 # Initialize database when app starts (after DB is defined)
 init_db()

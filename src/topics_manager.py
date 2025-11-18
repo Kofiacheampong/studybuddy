@@ -1,26 +1,18 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 import sqlite3
-import os
 
 bp = Blueprint('topics', __name__, url_prefix='/topics')
 
-# Determine DB path - must match app.py logic
-if os.getenv('FLASK_ENV') == 'production':
-    # On Render, use the ephemeral /tmp directory or a persistent volume if configured
-    # For now, use a tmp path (data resets on redeploy - see docs for Postgres option)
-    DB = '/tmp/study_buddy.db'
-else:
-    # Development: use data folder in project root
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    DB = os.path.join(base_dir, 'data', 'study_buddy.db')
-
-# Ensure data directory exists
-db_dir = os.path.dirname(DB)
-os.makedirs(db_dir, exist_ok=True)
+# Import DB from app.py to ensure we use the same database
+# This avoids creating a separate DB instance
+def get_db():
+    """Get DB path from app module to ensure consistency"""
+    from app import DB
+    return DB
 
 @bp.route('/')
 def list_topics():
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(get_db())
     c = conn.cursor()
     c.execute('SELECT id, name, description FROM topics ORDER BY name')
     topics = c.fetchall()
@@ -29,7 +21,7 @@ def list_topics():
     topic_stats = []
     for t in topics:
         tid = t[0]
-        conn = sqlite3.connect(DB)
+        conn = sqlite3.connect(get_db())
         c = conn.cursor()
         c.execute('SELECT COUNT(*) FROM notes WHERE topic_id = ?', (tid,))
         notes_count = c.fetchone()[0]
@@ -46,7 +38,7 @@ def create_topic():
         description = request.form.get('description', '').strip()
         if not name:
             return render_template('create_topic.html', error='Topic name is required')
-        conn = sqlite3.connect(DB)
+        conn = sqlite3.connect(get_db())
         c = conn.cursor()
         try:
             c.execute('INSERT INTO topics (name, description) VALUES (?, ?)', (name, description))
@@ -61,7 +53,7 @@ def create_topic():
 
 @bp.route('/<int:topic_id>')
 def view_topic(topic_id):
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(get_db())
     c = conn.cursor()
     c.execute('SELECT id, name, description FROM topics WHERE id = ?', (topic_id,))
     t = c.fetchone()
@@ -78,7 +70,7 @@ def view_topic(topic_id):
 
 @bp.route('/<int:topic_id>/edit', methods=['GET', 'POST'])
 def edit_topic(topic_id):
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(get_db())
     c = conn.cursor()
     c.execute('SELECT id, name, description FROM topics WHERE id = ?', (topic_id,))
     t = c.fetchone()
@@ -104,7 +96,7 @@ def edit_topic(topic_id):
 
 @bp.route('/<int:topic_id>/delete', methods=['POST'])
 def delete_topic(topic_id):
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(get_db())
     c = conn.cursor()
     c.execute('DELETE FROM topics WHERE id = ?', (topic_id,))
     conn.commit()
