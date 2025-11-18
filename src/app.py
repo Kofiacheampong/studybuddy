@@ -94,6 +94,9 @@ def init_db():
                       ('General', 'Default study topic'))
             conn.commit()
 
+# Initialize database when app starts (after DB is defined)
+init_db()
+
 @app.route('/')
 def index():
     return render_template('index.html')
